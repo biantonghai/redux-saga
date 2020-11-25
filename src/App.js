@@ -1,25 +1,48 @@
-import logo from './logo.svg';
-import './App.css';
+import logo from "./logo.svg";
+import "./App.css";
+import { connect } from "react-redux";
+import { Component } from "react";
+import { increment, incrementAsync } from "./actions/counter";
+import { get_user } from "./actions/user";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
+class App extends Component {
+  render() {
+    const { isFetching, error, user } = this.props.user;
+    let data;
+    if (error) {
+      data = error;
+    } else if (isFetching) {
+      data = "...Loading";
+    } else {
+      data = user&&user.data[0].name;
+    }
+    console.log(this.props);
+    return (
+      <div className="App">
+        <header className="App-header">
+          <img src={logo} className="App-logo" alt="logo" />
+        </header>
+        <p className="App-intro">{this.props.counter}</p>
         <p>
-          Edit <code>src/App.js</code> and save to reload.
+          <button onClick={this.props.increment}>+</button>
+          <br />
+          <button onClick={this.props.incrementAsync}>async+</button>
+          <br />
+          <button onClick={this.props.get_user}>Get User</button>
         </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+        <h1>{data}</h1>
+      </div>
+    );
+  }
 }
-
-export default App;
+const mapStateToProps = (state) => {
+  return {
+    counter: state.counter,
+    user: state.user,
+  };
+};
+export default connect(mapStateToProps, {
+  increment,
+  incrementAsync,
+  get_user,
+})(App);
